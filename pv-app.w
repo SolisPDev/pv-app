@@ -48,7 +48,10 @@ CREATE WIDGET-POOL.
 &Scoped-define DB-AWARE no
 
 /* Name of first Frame and/or Browse and/or first Query                 */
-&Scoped-define FRAME-NAME DEFAULT-FRAME
+&Scoped-define FRAME-NAME f-principal
+
+/* Standard List Definitions                                            */
+&Scoped-Define ENABLED-OBJECTS IMAGE-1 
 
 /* Custom List Definitions                                              */
 /* List-1,List-2,List-3,List-4,List-5,List-6                            */
@@ -63,13 +66,41 @@ CREATE WIDGET-POOL.
 /* Define the widget handle for the window                              */
 DEFINE VAR C-Win AS WIDGET-HANDLE NO-UNDO.
 
+/* Menu Definitions                                                     */
+DEFINE SUB-MENU m_Catalogos 
+       MENU-ITEM m_Articulos    LABEL "Articulos"     .
+
+DEFINE SUB-MENU m_Procesos 
+       MENU-ITEM m_Habilita_Ventas LABEL "Habilita Ventas"
+       MENU-ITEM m_Ventas       LABEL "Ventas"        
+       MENU-ITEM m_Cancelacin   LABEL "Cancelación"   .
+
+DEFINE SUB-MENU m_Reportes 
+       MENU-ITEM m_Corte_Caja   LABEL "Corte Caja"    
+       MENU-ITEM m_Ventas_detalladas LABEL "Ventas detalladas"
+       MENU-ITEM m_Hoja_Finanzas LABEL "Hoja Finanzas" .
+
+DEFINE MENU MENU-BAR-C-Win MENUBAR
+       SUB-MENU  m_Catalogos    LABEL "Catalogos"     
+       SUB-MENU  m_Procesos     LABEL "Procesos"      
+       SUB-MENU  m_Reportes     LABEL "Reportes"      
+       MENU-ITEM m_Salir        LABEL "Salir"         .
+
+
+/* Definitions of the field level widgets                               */
+DEFINE IMAGE IMAGE-1
+     FILENAME "C:/consispro/pv-app/imagenes/fondo_de_menu_ventas.jpg":U
+     SIZE 149 BY 24.29.
+
+
 /* ************************  Frame Definitions  *********************** */
 
-DEFINE FRAME DEFAULT-FRAME
+DEFINE FRAME f-principal
+     IMAGE-1 AT ROW 1 COL 1
     WITH 1 DOWN NO-BOX KEEP-TAB-ORDER OVERLAY 
          SIDE-LABELS NO-UNDERLINE THREE-D 
          AT COL 1 ROW 1
-         SIZE 69.8 BY 6.81.
+         SIZE 149 BY 24.29.
 
 
 /* *********************** Procedure Settings ************************ */
@@ -89,13 +120,18 @@ IF SESSION:DISPLAY-TYPE = "GUI":U THEN
   CREATE WINDOW C-Win ASSIGN
          HIDDEN             = YES
          TITLE              = "Sistema Punto de Venta"
-         HEIGHT             = 6.81
-         WIDTH              = 69.8
-         MAX-HEIGHT         = 16
-         MAX-WIDTH          = 80
-         VIRTUAL-HEIGHT     = 16
-         VIRTUAL-WIDTH      = 80
-         RESIZE             = yes
+         COLUMN             = 64
+         ROW                = 5.71
+         HEIGHT             = 24.29
+         WIDTH              = 149
+         MAX-HEIGHT         = 25
+         MAX-WIDTH          = 150
+         VIRTUAL-HEIGHT     = 25
+         VIRTUAL-WIDTH      = 150
+         CONTROL-BOX        = no
+         MIN-BUTTON         = no
+         MAX-BUTTON         = no
+         RESIZE             = no
          SCROLL-BARS        = no
          STATUS-AREA        = no
          BGCOLOR            = ?
@@ -105,6 +141,8 @@ IF SESSION:DISPLAY-TYPE = "GUI":U THEN
          MESSAGE-AREA       = no
          SENSITIVE          = yes.
 ELSE {&WINDOW-NAME} = CURRENT-WINDOW.
+
+ASSIGN {&WINDOW-NAME}:MENUBAR    = MENU MENU-BAR-C-Win:HANDLE.
 /* END WINDOW DEFINITION                                                */
 &ANALYZE-RESUME
 
@@ -115,7 +153,7 @@ ELSE {&WINDOW-NAME} = CURRENT-WINDOW.
 &ANALYZE-SUSPEND _RUN-TIME-ATTRIBUTES
 /* SETTINGS FOR WINDOW C-Win
   VISIBLE,,RUN-PERSISTENT                                               */
-/* SETTINGS FOR FRAME DEFAULT-FRAME
+/* SETTINGS FOR FRAME f-principal
                                                                         */
 IF SESSION:DISPLAY-TYPE = "GUI":U AND VALID-HANDLE(C-Win)
 THEN C-Win:HIDDEN = no.
@@ -149,6 +187,26 @@ DO:
   /* This event will close the window and terminate the procedure.  */
   APPLY "CLOSE":U TO THIS-PROCEDURE.
   RETURN NO-APPLY.
+END.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+
+&Scoped-define SELF-NAME m_Salir
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL m_Salir C-Win
+ON CHOOSE OF MENU-ITEM m_Salir /* Salir */
+DO:
+    MESSAGE "Cerrando Sistema..." VIEW-AS ALERT-BOX INFORMATION.
+    &IF "{&PROCEDURE-TYPE}" EQ "SmartPanel" &THEN
+    &IF "{&ADM-VERSION}" EQ "ADM1.1" &THEN
+      RUN dispatch IN THIS-PROCEDURE ('exit').
+    &ELSE
+      RUN exitObject.
+    &ENDIF
+  &ELSE
+      APPLY "CLOSE":U TO THIS-PROCEDURE.
+  &ENDIF
 END.
 
 /* _UIB-CODE-BLOCK-END */
@@ -220,8 +278,9 @@ PROCEDURE enable_UI :
                These statements here are based on the "Other 
                Settings" section of the widget Property Sheets.
 ------------------------------------------------------------------------------*/
-  VIEW FRAME DEFAULT-FRAME IN WINDOW C-Win.
-  {&OPEN-BROWSERS-IN-QUERY-DEFAULT-FRAME}
+  ENABLE IMAGE-1 
+      WITH FRAME f-principal IN WINDOW C-Win.
+  {&OPEN-BROWSERS-IN-QUERY-f-principal}
   VIEW C-Win.
 END PROCEDURE.
 
