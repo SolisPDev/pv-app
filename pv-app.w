@@ -4,9 +4,9 @@
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS C-Win 
 /*------------------------------------------------------------------------
 
-  File: 
+  File: pv-app.w
 
-  Description: 
+  Description:  Menu principal del sistema de punto de venta
 
   Input Parameters:
       <none>
@@ -14,9 +14,12 @@
   Output Parameters:
       <none>
 
-  Author: 
+  Author: Ing. Antonio Solis Perales
 
-  Created: 
+  Created: 01 diciembre 2024
+  
+  Notas: este sistema es solo una muestra de un sistema de punto de venta mas complejo
+  con muchas mas funcionalidade
 
 ------------------------------------------------------------------------*/
 /*          This .W file was created with the Progress AppBuilder.      */
