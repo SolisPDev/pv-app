@@ -37,7 +37,10 @@ CREATE WIDGET-POOL.
 
 /* Parameters Definitions ---                                           */
 
-/* Local Variable Definitions ---                                       */
+/* Local Variable Definitions ---        */
+
+DEFINE NEW GLOBAL SHARED VARIABLE programas AS CHARACTER INITIAL "c:\consispro\pv-app\".
+DEFINE NEW GLOBAL SHARED VARIABLE ext AS CHARACTER INITIAL ".r".
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -190,6 +193,17 @@ DO:
   /* This event will close the window and terminate the procedure.  */
   APPLY "CLOSE":U TO THIS-PROCEDURE.
   RETURN NO-APPLY.
+END.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+
+&Scoped-define SELF-NAME m_Articulos
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL m_Articulos C-Win
+ON CHOOSE OF MENU-ITEM m_Articulos /* Articulos */
+DO:
+  RUN VALUE(programas + "articulos" + ext).
 END.
 
 /* _UIB-CODE-BLOCK-END */
